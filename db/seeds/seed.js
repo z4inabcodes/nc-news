@@ -5,13 +5,13 @@ const format = require("pg-format")
 const seed = ({ topicData, userData, articleData, commentData }) => {
   return db.query("DROP TABLE IF EXISTS comments;")
   .then(() => {
-    return db.query("DROP TABLE IF EXISTS articles;");
+    return db.query("DROP TABLE IF EXISTS article;");
   })
   .then(() => {
     return db.query("DROP TABLE IF EXISTS users CASCADE;");
   })
   .then(() => {
-    return db.query("DROP TABLE IF EXISTS topics;");
+    return db.query("DROP TABLE IF EXISTS topics CASCADE;");
   })
   .then(() => {
     return createTopic();
@@ -51,7 +51,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       return [article.title, article.body, article.topic_slug, article.author_username, article.article_img_url]
     })
 
-    const sqlString = format(`INSERT INTO articles(title, body,topic,author,article_img_url) VALUES %L RETURNING *`, 
+    const sqlString = format(`INSERT INTO article(title, body,topic,author,article_img_url) VALUES %L RETURNING *`, 
       formattedArticle)
       return db.query(sqlString)
 
@@ -89,7 +89,7 @@ function createUser(){
 
 }
 function createArticle(){
-  return db.query(`CREATE TABLE articles(
+  return db.query(`CREATE TABLE article(
       article_id SERIAL PRIMARY KEY,
       title VARCHAR NOT NULL,
       topic VARCHAR REFERENCES topics(slug),
