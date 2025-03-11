@@ -1,5 +1,8 @@
-const fetchTopics = require('../models/topics.model')
+const {fetchTopics} = require('../models/topics.model')
 
-exports.getTopics=()=>{
+exports.getTopics=(req,res)=>{
+    fetchTopics().then((topics)=>{
+        res.status(200).send({topics:topics})
+    })
     
 }

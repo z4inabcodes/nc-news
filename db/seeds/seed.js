@@ -44,22 +44,13 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       return db.query(sqlString)
 
   })
+  
   .then(() => {
     return createArticle();
   })
-  .then(()=>{return db.query(`SELECT title, article_id FROM articles `)})
-  .then(({rows})=>{
-   let lookupObj={}
- 
-  rows.forEach(({title, article_id})=>{
-    lookupObj[title]=article_id
-
-  })
-  return lookupObj
-  })
   .then(()=>{
     const formattedArticle = articleData.map((article) => {
-      console.log(article.tpoics_slug,'')
+   
       return [article.title, article.body, article.topic, article.author, article.article_img_url,article.votes, new Date(article.created_at)]
     })
 
@@ -118,8 +109,8 @@ function createArticle(){
   return db.query(`CREATE TABLE articles(
       article_id SERIAL PRIMARY KEY,
       title VARCHAR NOT NULL,
-      topic VARCHAR REFERENCES topics(slug),
-      author VARCHAR REFERENCES users(username),
+      topic VARCHAR NOT NULL REFERENCES topics(slug) ON DELETE CASCADE,
+      author VARCHAR  NOT NULL REFERENCES users(username) ON DELETE CASCADE,
       body TEXT NOT NULL,
       created_at TIMESTAMP DEFAULT NOW(),
       votes INT DEFAULT 0,
@@ -130,10 +121,10 @@ function createArticle(){
 function createComment(){
   return db.query(`CREATE TABLE comments(
       comment_id SERIAL PRIMARY KEY,
-      article_id INT REFERENCES articles(article_id),
+       article_id INT NOT NULL REFERENCES articles(article_id) ON DELETE CASCADE,
       body TEXT NOT NULL,
       votes INT DEFAULT 0,
-      author VARCHAR REFERENCES users(username),
+       author VARCHAR NOT NULL REFERENCES users(username),
       created_at TIMESTAMP DEFAULT NOW()
     );`)
 
