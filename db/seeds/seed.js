@@ -1,11 +1,13 @@
 const db = require("../connection")
+const articles = require("../data/development-data/articles")
 const{topicData,articleData,userData,commentData} = require('../data/development-data/index')
 const format = require("pg-format")
+const { convertTimestampToDate } = require("./utils")
 
 const seed = ({ topicData, userData, articleData, commentData }) => {
   return db.query("DROP TABLE IF EXISTS comments;")
   .then(() => {
-    return db.query("DROP TABLE IF EXISTS article;");
+    return db.query("DROP TABLE IF EXISTS articles;");
   })
   .then(() => {
     return db.query("DROP TABLE IF EXISTS users CASCADE;");
@@ -45,13 +47,23 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
   .then(() => {
     return createArticle();
   })
+  .then(()=>{return db.query(`SELECT title, article_id FROM articles `)})
+  .then(({rows})=>{
+   let lookupObj={}
+ 
+  rows.forEach(({title, article_id})=>{
+    lookupObj[title]=article_id
+
+  })
+  return lookupObj
+  })
   .then(()=>{
     const formattedArticle = articleData.map((article) => {
-      
-      return [article.title, article.body, article.topic_slug, article.author_username, article.article_img_url]
+      console.log(article.tpoics_slug,'')
+      return [article.title, article.body, article.topic, article.author, article.article_img_url,article.votes, new Date(article.created_at)]
     })
 
-    const sqlString = format(`INSERT INTO article(title, body,topic,author,article_img_url) VALUES %L RETURNING *`, 
+    const sqlString = format(`INSERT INTO articles(title, body,topic,author,article_img_url,votes,created_at) VALUES %L RETURNING *`, 
       formattedArticle)
       return db.query(sqlString)
 
@@ -59,14 +71,28 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
   .then(() => {
     return createComment();
   })
-  .then(()=>{
-    const formattedComments = commentData.map((comment) => {
-      
-      return [ comment.article_id, comment.body, comment.author_username]
-    })
+  .then(()=>{return db.query(`SELECT title, article_id FROM articles `)})
+  .then(({rows})=>{
+   let lookupObj={}
+ 
+  rows.forEach(({title, article_id})=>{
+    lookupObj[title]=article_id
 
-    const sqlString = format(`INSERT INTO comments(article_id,body,author) VALUES %L RETURNING *`, 
+  })
+  return lookupObj
+  })
+  .then((lookupObj)=>{
+    const formattedComments =commentData.map(({ article_title, body, author, votes, created_at }) => [
+      lookupObj[article_title],
+      body,
+      author,
+      votes,
+      new Date(created_at)
+    ])
+
+    const sqlString = format(`INSERT INTO comments(article_id,body,author,votes,created_at) VALUES %L RETURNING *`, 
       formattedComments)
+     
       return db.query(sqlString)
 
   })
@@ -89,13 +115,13 @@ function createUser(){
 
 }
 function createArticle(){
-  return db.query(`CREATE TABLE article(
+  return db.query(`CREATE TABLE articles(
       article_id SERIAL PRIMARY KEY,
       title VARCHAR NOT NULL,
       topic VARCHAR REFERENCES topics(slug),
       author VARCHAR REFERENCES users(username),
       body TEXT NOT NULL,
-      created_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT NOW(),
       votes INT DEFAULT 0,
       article_img_url VARCHAR(1000) 
     );`)
@@ -104,11 +130,11 @@ function createArticle(){
 function createComment(){
   return db.query(`CREATE TABLE comments(
       comment_id SERIAL PRIMARY KEY,
-      article_id INT REFERENCES article(article_id),
+      article_id INT REFERENCES articles(article_id),
       body TEXT NOT NULL,
       votes INT DEFAULT 0,
       author VARCHAR REFERENCES users(username),
-      created_at TIMESTAMP
+      created_at TIMESTAMP DEFAULT NOW()
     );`)
 
 
