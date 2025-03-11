@@ -29,7 +29,6 @@ describe("GET /api/topics", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.topics.length).toBe(3);
-        console.log(body.topics,'vcyd')
         body.topics.forEach((topic)=>{
           expect(typeof topic.slug).toBe('string');
           expect(topic.description.length).toBeGreaterThan(0);
@@ -80,3 +79,33 @@ describe("GET /api/articles/:article_id", () => {
   });
  
 });
+describe("GET /api/articles", () => {
+  test("200: Responds with an array of correctly formatted articles objects", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body:{articles} }) => {
+        expect(articles.length).toBe(13);
+        articles.forEach((article)=>{
+          console.log(article)
+           expect(article).toEqual({
+                               author: expect.any(String),
+                              title: expect.any(String),
+                              article_id: expect.any(Number),
+                              topic:expect.any(String),
+                              created_at: expect.any(String),
+                              votes:  expect.any(Number),
+                              article_img_url: expect.any(String),
+                              comment_count: expect.any(Number)})
+        })
+        })
+      });
+      test("404: Responds with a 404 when incorrect id is added", () => {
+        return request(app)
+          .get("/api/articleees")
+          .expect(404)
+          .then(({body})=>{
+            expect(body.msg).toBe('Wrong Endpoint!')
+    
+          })})
+  });
