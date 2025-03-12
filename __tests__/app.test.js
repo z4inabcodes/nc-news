@@ -73,7 +73,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/14")
       .expect(404)
       .then(({body})=>{
-        expect(body.msg).toBe('Invalid id!')
+        expect(body.msg).toBe('Article not found!')
 
       })
   });
@@ -87,7 +87,6 @@ describe("GET /api/articles", () => {
       .then(({ body:{articles} }) => {
         expect(articles.length).toBe(13);
         articles.forEach((article)=>{
-          console.log(article)
            expect(article).toEqual({
                                author: expect.any(String),
                               title: expect.any(String),
@@ -109,3 +108,47 @@ describe("GET /api/articles", () => {
     
           })})
   });
+
+  describe('GET /api/articles/:article_id/comments',()=>{
+    test('200: returns an array of comment object with the desired article id',()=>{
+      return request(app)
+      .get('/api/articles/3/comments')
+      .expect(200)
+      .then(({body:{comments}})=>{
+        expect(Array.isArray(comments)).toBe(true);
+        comments.forEach((comment)=>{
+          expect(comment).toEqual({
+           comment_id:expect.any(Number),
+           article_id:expect.any(Number),
+           body: expect.any(String),
+           votes: expect.any(Number),
+           author: expect.any(String),
+           created_at: expect.any(String)
+         })
+
+      })
+    })})
+
+    test("404: Responds with a 404 when incorrect article id is added", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(404)
+        .then(({body})=>{
+          expect(body.msg).toBe('Article not found!')
+  
+        })
+    });
+
+    test("400: Responds with a 400 when incorrect article id is added", () => {
+      return request(app)
+        .get("/api/articles/'15555'/comments")
+        .expect(400)
+        .then(({body})=>{
+          expect(body.msg).toBe('Invalid article ID!')
+  
+        })
+    });
+  })
+
+
+
