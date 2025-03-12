@@ -4,13 +4,13 @@ const app = express()
 const {getEndpoint} =require('./db/controllers/getEnpoint.controllers')
 const {getTopics} =require('./db/controllers/topics.controller')
 const {handleWrongEndPoints}=require('./db/controllers/errors.contollers')
-const {getArticlesById,getArticles} =require('./db/controllers/articles.controllers')
+const {getArticlesById,getArticles,getCommentsByArticleId} =require('./db/controllers/articles.controllers')
 
 app.get('/api', getEndpoint)
 app.get('/api/topics',getTopics)
  app.get('/api/articles/:article_id',getArticlesById)
  app.get('/api/articles',getArticles)
-
+ app.get('/api/articles/:article_id/comments',getCommentsByArticleId)
 
 
 

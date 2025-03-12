@@ -1,4 +1,4 @@
-const {fetchArticlesById,fetchArticles} = require('../models/articles.model')
+const {fetchArticlesById,fetchArticles,fetchCommentByArticleID} = require('../models/articles.model')
 
 exports.getArticlesById=(req,res,next)=>{
     fetchArticlesById(req.params.article_id).then((article)=>{
@@ -11,8 +11,21 @@ exports.getArticlesById=(req,res,next)=>{
 
 exports.getArticles=(req,res,next)=>{
     fetchArticles().then((articles)=>{
-        console.log(articles,' console.log(articles) in cont')
     res.status(200).send({articles})
+    }).catch((err)=>{
+        next(err)
+    })
+    
+}
+
+
+exports.getCommentsByArticleId=(req,res,next)=>{
+
+    if(isNaN(req.params.article_id)){
+        return next({ status: 400, msg: "Invalid article ID!" })
+    }
+    fetchCommentByArticleID(req.params.article_id).then((comments)=>{
+    res.status(200).send({comments:comments})
     }).catch((err)=>{
         next(err)
     })
