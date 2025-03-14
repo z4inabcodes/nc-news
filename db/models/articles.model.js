@@ -50,3 +50,18 @@ exports.fetchCommentByArticleID = (article_id) => {
            
         }
             
+        exports.updateArticleVotes = (article_id,inc_votes) => {
+         
+            const queryString = `
+              UPDATE articles SET votes = votes + $1 WHERE article_id=$2
+              RETURNING *;`;
+
+            return db.query(queryString, [inc_votes,article_id])
+  
+            .then(({ rows }) =>{
+             
+            return rows[0];
+          });
+       
+    }
+        

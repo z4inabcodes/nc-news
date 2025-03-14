@@ -161,7 +161,6 @@ describe("GET /api/articles", () => {
         })
         .then(({body})=>{
           const { comment } = body;
-  console.log(comment)
     expect(comment).toEqual({
         comment_id:expect.any(Number),
         article_id:expect.any(Number),
@@ -187,4 +186,46 @@ describe("GET /api/articles", () => {
       })
   });
 
+describe('PATCH /api/articles/:article_id',()=>{
+    test('200::sucessfully updates votes',()=>{
+      const inc = {
+        "inc_votes": 7,
+       }
+      return request(app)
+        .patch("/api/articles/1")
+        .send(inc)
+        .expect(200)
+        .then(({body})=>{
+           const { article } = body;
+           console.log(article)
+          expect(article.votes).toBe(107)
+  })
+})
+
+test('400:returns Bad request when no number is added',()=>{
+  const inc = {}
+  return request(app)
+    .patch("/api/articles/1")
+    .send(inc)
+    .expect(400)
+    .then(({body})=>{
+    
+   
+      expect(body.msg).toBe('Bad request')
+})
+})
+test('404:returns 404 when article is not found',()=>{
+  const inc =  {
+    "inc_votes": 7,
+   }
+  return request(app)
+    .patch("/api/articles/163")
+    .send(inc)
+    .expect(404)
+    .then(({body})=>{
+  
+      expect(body.msg).toBe('Article not found!')
+})
+})
+  })
 
