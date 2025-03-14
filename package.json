@@ -6,11 +6,11 @@
   "scripts": {
     "setup-dbs": "psql -f ./db/setup-dbs.sql",
     "seed-dev": "node ./db/seeds/run-seed.js",
-   "test": "jest --runInBand",
+    "test": "jest --runInBand",
     "prepare": "husky install",
     "start": "node listen.js",
     "test-seed": "jest seed.test.js",
-      "dev": "nodemon listen.js"
+    "dev": "nodemon listen.js"
   },
   "repository": {
     "type": "git",
@@ -33,7 +33,8 @@
   "dependencies": {
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "pg": "^8.13.3",
+    "format": "^0.2.2",
+    "pg": "^8.14.0",
     "pg-format": "^1.0.4"
   },
   "jest": {

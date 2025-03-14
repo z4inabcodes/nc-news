@@ -1,4 +1,4 @@
-const {fetchArticlesById,fetchArticles,fetchCommentByArticleID} = require('../models/articles.model')
+const {fetchArticlesById,fetchArticles,fetchCommentByArticleID,addCommentIntoArticle} = require('../models/articles.model')
 
 exports.getArticlesById=(req,res,next)=>{
     fetchArticlesById(req.params.article_id).then((article)=>{
@@ -30,4 +30,17 @@ exports.getCommentsByArticleId=(req,res,next)=>{
         next(err)
     })
     
+}
+exports.postCommentOnArticle=(req,res,next)=>{
+    let article_id = req.params.article_id
+    let {body,username}= req.body
+    if(!username||!body){
+        res.status(400).send({msg:'username and body are required!'})
+    }
+    
+    addCommentIntoArticle(article_id,body,username).then((comment)=>{ 
+    res.status(201).send({ comment})
+    }).catch((err)=>{
+        next(err)
+    })
 }
