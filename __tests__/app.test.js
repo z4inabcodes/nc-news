@@ -150,5 +150,41 @@ describe("GET /api/articles", () => {
     });
   })
 
+  describe('POST /api/articles/:article_id/comments',()=>{
+    test('201::sucessfully posts a new comment ',()=>{
+      return request(app)
+        .post("/api/articles/3/comments")
+        .expect(201)
+        .send({
+          username: "butter_bridge",
+          body:"HI!"
+        })
+        .then(({body})=>{
+          const { comment } = body;
+  console.log(comment)
+    expect(comment).toEqual({
+        comment_id:expect.any(Number),
+        article_id:expect.any(Number),
+        body: 'HI!',
+        votes:0,
+        author:'butter_bridge',
+        created_at:expect.any(String),
+    });
+    })
+  })
+  test("400: return a 400 when username or bosy is not entered", () => {
+    return request(app)
+    .post("/api/articles/3/comments")
+    .send({
+      username: "",
+      body:""
+    })
+    .expect(400)
+    .then(({body})=>{
+      expect(body.msg).toBe('username and body are required!')
+    })
+
+      })
+  });
 
 

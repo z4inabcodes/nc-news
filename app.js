@@ -1,16 +1,22 @@
-const db = require("./db/connection")
+
 const express = require("express")
-const app = express()
+const app = express() 
+
+ const db = require("./db/connection")
 const {getEndpoint} =require('./db/controllers/getEnpoint.controllers')
 const {getTopics} =require('./db/controllers/topics.controller')
 const {handleWrongEndPoints}=require('./db/controllers/errors.contollers')
-const {getArticlesById,getArticles,getCommentsByArticleId} =require('./db/controllers/articles.controllers')
+const {getArticlesById,getArticles,getCommentsByArticleId,postCommentOnArticle} =require('./db/controllers/articles.controllers')
 
+app.use(express.json())
 app.get('/api', getEndpoint)
 app.get('/api/topics',getTopics)
  app.get('/api/articles/:article_id',getArticlesById)
  app.get('/api/articles',getArticles)
  app.get('/api/articles/:article_id/comments',getCommentsByArticleId)
+ app.post('/api/articles/:article_id/comments',postCommentOnArticle)
+
+
 
 
 
