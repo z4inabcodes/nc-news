@@ -229,3 +229,24 @@ test('404:returns 404 when article is not found',()=>{
 })
   })
 
+//   describe('DELETE /api/comments/:comment_id',()=>{
+//   test('204: return 204 when comment is deleted successfully',()=>{
+//   return request(app)
+//   .delete('/api/comments/2')
+//   .expect(204)
+//   .then(({body})=>{
+//     expect(body).toEqual({})
+//   })
+//   })
+//   test('400:returns Bad request when incorrect id or no id is added',()=>{
+ 
+//     return request(app)
+//       .delete("/api/comments/242")
+//       .expect(400)
+//       .then(({body})=>{
+      
+     
+//         expect(body.msg).toBe('Inalid Id!')
+//   })
+// })
+//   })
